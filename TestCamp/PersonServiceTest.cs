@@ -87,4 +87,18 @@ public class PersonServiceTest
         Assert.Equal(personResponse.PersonId, _personService.GetPersonByPersonId(personResponse.PersonId)?.PersonId);
     }
     #endregion
+
+#region GetAllPersons
+    [Fact]
+    public void GetAllPersons_EmptyList()
+    {
+
+    }
+
+    [Fact]
+    public void GetAllPersons_NotEmptyList()
+    {
+
+    }
+#endregion
 }
