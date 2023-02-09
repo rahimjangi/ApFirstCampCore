@@ -34,7 +34,12 @@ namespace Services
         public IEnumerable<CountryResponse> GetAll()
         {
 
-            return CountryList.Select(country => CountryExtensions.ToCountryResponse(country));
+            return CountryList.Select(country => country.ToCountryResponse());
+        }
+
+        public CountryResponse GetCountryByCountryId(Guid? countryId)
+        {
+            return CountryList.Where(x => x.CountryId == countryId).Select(item=>item.ToCountryResponse()).FirstOrDefault();
         }
     }
 }

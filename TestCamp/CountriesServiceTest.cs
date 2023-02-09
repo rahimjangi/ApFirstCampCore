@@ -66,14 +66,35 @@ namespace TestCamp
         [Fact]
         public void GetAllCountries_NotEmpty()
         {
-            _countriesService.AddCountry(new CountryAddRequest()
+           var country= _countriesService.AddCountry(new CountryAddRequest()
             {
                 CountryName = "sample"
             });
             IEnumerable<CountryResponse> responses =
             _countriesService.GetAll();
             Assert.NotEmpty(responses);
+            Assert.Contains(country, responses);
 
+        }
+        #endregion
+
+        #region GetCountryByCountryId
+        [Fact]
+        public void GetCountryByCountryId_NotNullCountryId()
+        {
+            CountryResponse country = _countriesService.AddCountry(
+                new CountryAddRequest() { CountryName="USA"}
+                );
+          Guid guid=_countriesService.GetAll().Where( temp=>temp.CountryName==country.CountryName ).Select(country=>country.CountryId).FirstOrDefault();
+            Assert.Equal(country, _countriesService.GetCountryByCountryId(guid));
+        }
+
+        [Fact]
+        public void GetCountryByCountryId_NullCountryId()
+        {
+            Guid? guid= null;
+            CountryResponse? country = _countriesService.GetCountryByCountryId(guid);
+            Assert.Null(country);
         }
         #endregion
     }

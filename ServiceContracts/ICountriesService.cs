@@ -20,4 +20,5 @@ public interface ICountriesService
     /// <returns>Returns the Country object after adding it to the country list(including GUID)</returns>
     CountryResponse AddCountry(CountryAddRequest? countryAddRequest);
     IEnumerable<CountryResponse> GetAll();
+    CountryResponse? GetCountryByCountryId(Guid? countryId);
 }
