@@ -1,4 +1,5 @@
 ﻿using ServiceContracts.DTO;
+using ServiceContracts.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ public interface IPersonService
     /// Returns all existing person from personlist
     /// </summary>
     /// <returns>IEnumerable<PersonResponse></returns>
-    IEnumerable<PersonResponse> GetAllPersons();
+    List<PersonResponse> GetAllPersons();
 
     /// <summary>
     /// Returns PersonResponse object by PersonId if there is any!
@@ -31,4 +32,14 @@ public interface IPersonService
     /// <param name="PersonId">PersonId-Guid</param>
     /// <returns>PersonResponse model</returns>
     PersonResponse? GetPersonByPersonId(Guid? PersonId);
+
+    /// <summary>
+    /// Returns all Person objects that matches with with the given search field 
+    /// </summary>
+    /// <param name="searchBy">Field to search</param>
+    /// <param name="searchString">chars to search</param>
+    /// <returns>IEnumerable<PersonResponse></returns>
+    List<PersonResponse>? GetFilteredPersons(string searchBy, string? searchString);
+
+    List<PersonResponse> GetSortedPersons(List<PersonResponse>allPersons,string sortBy,SortOrderOptions sortOrder);
 }

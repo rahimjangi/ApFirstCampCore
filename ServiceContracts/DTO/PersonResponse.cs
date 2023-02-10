@@ -37,6 +37,11 @@ public class PersonResponse
     {
         return base.GetHashCode();
     }
+
+    public override string? ToString()
+    {
+        return $"PersonResponse: {PersonId} - {PersonName} - {Email} - {DateOfBirth} - {Age} - {Gender} - {Country} - {Address} - {ReceiveNewsLetters}";
+    }
 }
 
 public static class PersonExtensions
@@ -51,8 +56,6 @@ public static class PersonExtensions
         Age = (person.DateOfBirth!=null)?(int)Math.Round((DateTime.Now - person.DateOfBirth).GetValueOrDefault().TotalDays / 365.24):0,
         Address = person.Address,
         Gender=Enum.Parse<GenderOptions>(person.Gender)
-        
-
 
     };
 }
