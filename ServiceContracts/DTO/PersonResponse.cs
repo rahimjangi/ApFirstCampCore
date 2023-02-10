@@ -33,6 +33,20 @@ public class PersonResponse
             PersonName==otherPerson.PersonName ;
     }
 
+    public PersonUpdateRequest ToPersonUpdateRequest()
+    {
+        return new PersonUpdateRequest() { 
+            PersonId= PersonId,
+            PersonName=PersonName,
+            Email=Email,
+            DateOfBirth=DateOfBirth,
+            Address=Address,
+            CountryId=CountryId,
+            Gender=Gender,
+            ReceiveNewsLetters=ReceiveNewsLetters,
+        };
+    }
+
     public override int GetHashCode()
     {
         return base.GetHashCode();

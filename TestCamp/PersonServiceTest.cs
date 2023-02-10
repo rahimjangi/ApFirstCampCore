@@ -336,4 +336,86 @@ public class PersonServiceTest
     }
     #endregion
 
+    #region UpdatePerson
+
+    [Fact]
+    public void UpdatePerson_NullPerson()
+    {
+        PersonUpdateRequest? personUpdateRequest = null;
+        Assert.Throws<ArgumentNullException>(() => _personService.UpdatePerson(personUpdateRequest));
+
+    }
+
+    [Fact]
+    public void UpdatePerson_NullPersonID()
+    {
+        PersonUpdateRequest? personUpdateRequest = new PersonUpdateRequest() { PersonId= Guid.NewGuid()};
+        Assert.Throws<ArgumentException>(() => _personService.UpdatePerson(personUpdateRequest));
+
+    }
+
+    [Fact]
+    public void UpdatePerson_PersonDetail()
+    {
+        CountryResponse countryResponse = _countryService.AddCountry(new CountryAddRequest() { CountryName = "USA" });
+        PersonAddRequest? personAddRequest = new PersonAddRequest()
+        {
+            PersonName = "Rahim",
+            Address = "Address",
+            DateOfBirth = new DateTime(DateTime.Now.Year - 40, 9, 23),
+            Email = "email",
+            Gender = GenderOptions.Male,
+            ReceiveNewsLetters = true,
+            CountryId = countryResponse.CountryId
+        };
+        PersonResponse? personResponse = _personService.AddPerson(personAddRequest);
+
+        PersonUpdateRequest? personUpdateRequest = new PersonUpdateRequest()
+        {
+            PersonId = personResponse.PersonId,
+            PersonName= "MASHRAHIM",
+            Address= personResponse.Address,
+            CountryId= personResponse.CountryId,
+            DateOfBirth= personResponse.DateOfBirth,
+            Email= personResponse.Email,
+            Gender= personResponse.Gender,
+            ReceiveNewsLetters= personResponse.ReceiveNewsLetters
+        };
+
+        PersonResponse? updatedPerson = _personService.UpdatePerson(personUpdateRequest);
+
+        Assert.NotNull(updatedPerson);
+        Assert.NotEqual(updatedPerson,personResponse);
+
+    }
+    #endregion
+
+    #region DeletePerson
+    [Fact]
+    public void DeletePerson_NullPersonId() {
+        Assert.Throws<ArgumentException>(() => { 
+            _personService.DeletePerson(Guid.Empty);
+        });
+    }
+
+    [Fact]
+    public void DeletePerson_PersonId() {
+        CountryResponse countryResponse = _countryService.AddCountry(new CountryAddRequest() { CountryName = "USA" });
+        PersonAddRequest? personAddRequest = new PersonAddRequest()
+        {
+            PersonName = "Rahim",
+            Address = "Address",
+            DateOfBirth = new DateTime(DateTime.Now.Year - 40, 9, 23),
+            Email = "email",
+            Gender = GenderOptions.Male,
+            ReceiveNewsLetters = true,
+            CountryId = countryResponse.CountryId
+        };
+        PersonResponse? personResponse = _personService.AddPerson(personAddRequest);
+        Assert.True(_personService.GetAllPersons().Count == 1);
+        _personService.DeletePerson(personResponse?.PersonId);
+        Assert.True(_personService.GetAllPersons().Count==0);
+    }
+    #endregion
+
 }

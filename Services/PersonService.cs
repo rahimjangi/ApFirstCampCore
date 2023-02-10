@@ -52,6 +52,7 @@ namespace Services
 
         }
 
+
         public List<PersonResponse> GetAllPersons()
         {
            return PersonList.Select(x => x.ToPersonResponse()).ToList();
@@ -140,11 +141,11 @@ namespace Services
                 case nameof(Person.Email):
                     if (sortOrder.Equals(SortOrderOptions.ASC))
                     {
-                        matchingPersons = allPersons.OrderBy(x => x.PersonName).ToList();
+                        matchingPersons = allPersons.OrderBy(x => x.Email).ToList();
                     }
                     else
                     {
-                        matchingPersons = allPersons.OrderByDescending(x => x.PersonName).ToList();
+                        matchingPersons = allPersons.OrderByDescending(x => x.Email).ToList();
                     }
                     break;
 
@@ -152,50 +153,68 @@ namespace Services
                 case nameof(Person.DateOfBirth):
                     if (sortOrder.Equals(SortOrderOptions.ASC))
                     {
-                        matchingPersons = allPersons.OrderBy(x => x.PersonName).ToList();
+                        matchingPersons = allPersons.OrderBy(x => x.DateOfBirth).ToList();
                     }
                     else
                     {
-                        matchingPersons = allPersons.OrderByDescending(x => x.PersonName).ToList();
+                        matchingPersons = allPersons.OrderByDescending(x => x.DateOfBirth).ToList();
                     }
                     break;
 
                 case nameof(Person.Gender):
                     if (sortOrder.Equals(SortOrderOptions.ASC))
                     {
-                        matchingPersons = allPersons.OrderBy(x => x.PersonName).ToList();
+                        matchingPersons = allPersons.OrderBy(x => x.Gender).ToList();
                     }
                     else
                     {
-                        matchingPersons = allPersons.OrderByDescending(x => x.PersonName).ToList();
+                        matchingPersons = allPersons.OrderByDescending(x => x.Gender).ToList();
                     }
                     break;
 
                 case nameof(Person.CountryId):
                     if (sortOrder.Equals(SortOrderOptions.ASC))
                     {
-                        matchingPersons = allPersons.OrderBy(x => x.PersonName).ToList();
+                        matchingPersons = allPersons.OrderBy(x => x.CountryId).ToList();
                     }
                     else
                     {
-                        matchingPersons = allPersons.OrderByDescending(x => x.PersonName).ToList();
+                        matchingPersons = allPersons.OrderByDescending(x => x.CountryId).ToList();
                     }
                     break;
 
                 case nameof(Person.Address):
                     if (sortOrder.Equals(SortOrderOptions.ASC))
                     {
-                        matchingPersons = allPersons.OrderBy(x => x.PersonName).ToList();
+                        matchingPersons = allPersons.OrderBy(x => x.Address).ToList();
                     }
                     else
                     {
-                        matchingPersons = allPersons.OrderByDescending(x => x.PersonName).ToList();
+                        matchingPersons = allPersons.OrderByDescending(x => x.Address).ToList();
                     }
                     break;
 
                 default: matchingPersons = allPersons; break;
             }
             return matchingPersons;
+        }
+
+        public PersonResponse? UpdatePerson(PersonUpdateRequest? personUpdateRequest)
+        {
+            if (personUpdateRequest == null) throw new ArgumentNullException(nameof(personUpdateRequest));
+            Helpers.ModelValidate.Validate(personUpdateRequest);
+            Person? person = PersonList.FirstOrDefault(x => x.PersonId == personUpdateRequest.PersonId);
+            if (person == null) throw new ArgumentException("Requested object does not exist");
+            PersonList.Remove(person);
+            PersonList.Add(personUpdateRequest.ToPerson());
+            return PersonList.FirstOrDefault(x => x.PersonId == personUpdateRequest.PersonId)?.ToPersonResponse();
+        }
+        public void DeletePerson(Guid? PersonId)
+        {
+            if (PersonId == null) throw new ArgumentNullException(nameof(PersonId));
+            Person? person = PersonList.FirstOrDefault(x => x.PersonId == PersonId);
+            if (person == null) throw new ArgumentException("Requested object does not exist");
+            PersonList.Remove(person);
         }
     }
 }

@@ -42,4 +42,17 @@ public interface IPersonService
     List<PersonResponse>? GetFilteredPersons(string searchBy, string? searchString);
 
     List<PersonResponse> GetSortedPersons(List<PersonResponse>allPersons,string sortBy,SortOrderOptions sortOrder);
+
+    /// <summary>
+    /// Updates the existing Person in Person List
+    /// </summary>
+    /// <param name="personUpdateRequest">Requested person object to update</param>
+    /// <returns>PersonResponse object</returns>
+    PersonResponse? UpdatePerson(PersonUpdateRequest? personUpdateRequest);
+
+    /// <summary>
+    /// Delete requested person from person list
+    /// </summary>
+    /// <param name="PersonId">Person Id to delete</param>
+    void DeletePerson(Guid? PersonId);
 }
