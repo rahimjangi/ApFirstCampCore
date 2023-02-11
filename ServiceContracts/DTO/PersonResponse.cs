@@ -25,8 +25,12 @@ public class PersonResponse
     public string? Address { get; set; }
     public bool ReceiveNewsLetters { get; set; }
 
+    
+
+ 
     public override bool Equals(object? obj)
     {
+       
         if (obj == null || obj.GetType() != typeof(PersonResponse)) return false;
         PersonResponse otherPerson= obj as PersonResponse;
         return PersonId == otherPerson.PersonId &&
@@ -44,6 +48,7 @@ public class PersonResponse
             CountryId=CountryId,
             Gender=Gender,
             ReceiveNewsLetters=ReceiveNewsLetters,
+            
         };
     }
 
@@ -70,6 +75,5 @@ public static class PersonExtensions
         Age = (person.DateOfBirth!=null)?(int)Math.Round((DateTime.Now - person.DateOfBirth).GetValueOrDefault().TotalDays / 365.24):0,
         Address = person.Address,
         Gender=Enum.Parse<GenderOptions>(person.Gender)
-
     };
 }

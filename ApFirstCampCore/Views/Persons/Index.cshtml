@@ -1,0 +1,55 @@
+﻿@model IEnumerable<PersonResponse>
+
+@{
+    ViewBag.Title = "Persons";
+}
+
+<div class="container">
+    <form method="get" action="~/persons/index">
+        <h2>Persons</h2>
+        <div class="box flex">
+            <div class="flex-1">
+                <select class="form-input" name="searchField">
+                    @foreach (var item in ViewBag.SearchFields)
+                    {
+                        <option value="@item.Key">@item.Value</option>
+                    }
+                </select>
+            </div>
+            <div class="flex-1">
+                <input name="searchString" type="search" id="Search" class="form-input" placeholder="Search" />
+            </div>
+            <div class="flex-1">
+                <button class="button button-blue-back" type="submit">Search</button>
+                <a href="~/persons/index" class="link-hover">Clear All</a>
+            </div>
+        </div>
+        <table class="table w-100 mt">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Country</th>
+                    <th>Gender</th>
+                    <th>Date Of Birth</th>
+                    <th>Age</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.PersonName</td>
+                        <td>@item.Email</td>
+                        <td>@item.Country</td>
+                        <td>@item.Gender.ToString()</td>
+                        <td>@item.DateOfBirth?.ToString("dd MMMM yyyy")</td>
+                        <td>@item.Age</td>
+                        <td>@item.Address</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </form>
+</div>
