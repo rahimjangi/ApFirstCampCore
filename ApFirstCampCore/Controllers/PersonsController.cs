@@ -7,6 +7,7 @@ using Services;
 
 namespace ApFirstCampCore.Controllers;
 
+[Route("[controller]")]
 public class PersonsController : Controller
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -16,7 +17,7 @@ public class PersonsController : Controller
         _unitOfWork = unitOfWork;
     }
 
-    [Route("persons/index")]
+    [Route("[action]")]
     [Route("/")]
     public IActionResult Index(string searchBy, string? searchString, string sortBy = nameof(PersonResponse.PersonName), SortOrderOptions sortOrder = SortOrderOptions.ASC)
     {
@@ -54,5 +55,32 @@ public class PersonsController : Controller
         ViewBag.CurrentSearchBy = searchBy;
         ViewBag.CurrentSearchString = searchString;
         return View(sortedPersons);
+    }
+
+
+    [Route("[action]")]
+    [HttpGet]
+    public IActionResult Create()
+    {
+        ViewBag.Countries = _unitOfWork.CountriesService.GetAll();
+        return View();
+    }
+
+    [Route("[action]")]
+    [HttpPost]
+    public IActionResult Create([FromForm]PersonAddRequest personAddRequest)
+        {
+        if(ModelState.IsValid)
+        {
+           PersonResponse? createdPerson= _unitOfWork.PersonService.AddPerson(personAddRequest);
+        }
+        else
+        {
+            ViewBag.Countries = _unitOfWork.CountriesService.GetAll();
+            ViewBag.Errors=ModelState.Values.SelectMany(v=>v.Errors).Select(x=>x.ErrorMessage).ToList();
+            return View();
+        }
+
+        return RedirectToAction("Index","Persons");
     }
 }

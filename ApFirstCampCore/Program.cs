@@ -3,7 +3,7 @@ using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<IUnitOfWork,UnitOfWork>();
+builder.Services.AddSingleton<IUnitOfWork,UnitOfWork>();
 
 var app = builder.Build();
 

@@ -74,6 +74,7 @@ public static class PersonExtensions
         DateOfBirth = person.DateOfBirth,
         Age = (person.DateOfBirth!=null)?(int)Math.Round((DateTime.Now - person.DateOfBirth).GetValueOrDefault().TotalDays / 365.24):0,
         Address = person.Address,
-        Gender=Enum.Parse<GenderOptions>(person.Gender)
+        Gender=Enum.Parse<GenderOptions>(person.Gender),
+        ReceiveNewsLetters=person.ReceiveNewsLetters
     };
 }
