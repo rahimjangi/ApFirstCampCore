@@ -5,7 +5,7 @@
 }
 
 <div class="container">
-    <form method="get" action="~/persons/index">
+    <form method="get"  asp-controller="persons" asp-action="index">
         <h2>Persons</h2>
         <div class="box flex">
             <div class="flex-1">
@@ -28,7 +28,7 @@
             </div>
             <div class="flex-1">
                 <button class="button button-blue-back" type="submit">Search</button>
-                <a href="~/persons/index" class="link-hover">Clear All</a>
+                <a  asp-controller="Persons" asp-action="Index" class="link-hover">Clear All</a>
             </div>
         </div>
         <table class="table w-100 mt">
