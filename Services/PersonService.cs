@@ -44,6 +44,14 @@ public class PersonService : IPersonService
 
     }
 
+    private PersonResponse? ConvertPersonToPersonResponse(Person person)
+    {
+        if (person == null) return null;
+        PersonResponse response = person.ToPersonResponse();
+        response.Country=_countryService.GetCountryByCountryId(person.CountryId)?.CountryName;
+        return response;
+    }
+
     public PersonResponse? AddPerson(PersonAddRequest? personAddRequest)
     {
         if(personAddRequest == null)throw new ArgumentNullException(nameof(personAddRequest));
@@ -74,7 +82,7 @@ public class PersonService : IPersonService
 
     public List<PersonResponse> GetAllPersons()
     {
-       return PersonList.Select(x => x.ToPersonResponse()).ToList();
+       return PersonList.Select(x => ConvertPersonToPersonResponse(x)).ToList();
     }
 
     public List<PersonResponse>? GetFilteredPersons(string searchBy, string? searchString)
@@ -89,38 +97,38 @@ public class PersonService : IPersonService
 
         switch (searchBy)
         {
-            case nameof(Person.PersonName):
+            case nameof(PersonResponse.PersonName):
                 matchingPersons = allPersons.Where(temp =>
                 (!string.IsNullOrEmpty(temp.PersonName) ?
                 temp.PersonName.Contains(searchString, StringComparison.OrdinalIgnoreCase) : true)).ToList();
                 break;
 
-            case nameof(Person.Email):
+            case nameof(PersonResponse.Email):
                 matchingPersons = allPersons.Where(temp =>
                 (!string.IsNullOrEmpty(temp.Email) ?
                 temp.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase) : true)).ToList();
                 break;
 
 
-            case nameof(Person.DateOfBirth):
+            case nameof(PersonResponse.DateOfBirth):
                 matchingPersons = allPersons.Where(temp =>
                 (temp.DateOfBirth != null) ?
                 temp.DateOfBirth.Value.ToString("dd MMMM yyyy").Contains(searchString, StringComparison.OrdinalIgnoreCase) : true).ToList();
                 break;
 
-            case nameof(Person.Gender):
+            case nameof(PersonResponse.Gender):
                 matchingPersons = allPersons.Where(temp =>
                 (!string.IsNullOrEmpty(temp.Gender.ToString()) ?
                 temp.Gender.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase) : true)).ToList();
                 break;
 
-            case nameof(Person.CountryId):
+            case nameof(PersonResponse.Country):
                 matchingPersons = allPersons.Where(temp =>
                 (!string.IsNullOrEmpty(temp.Country) ?
                 temp.Country.Contains(searchString, StringComparison.OrdinalIgnoreCase) : true)).ToList();
                 break;
 
-            case nameof(Person.Address):
+            case nameof(PersonResponse.Address):
                 matchingPersons = allPersons.Where(temp =>
                 (!string.IsNullOrEmpty(temp.Address) ?
                 temp.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase) : true)).ToList();
@@ -134,8 +142,8 @@ public class PersonService : IPersonService
     public PersonResponse? GetPersonByPersonId(Guid? personId)
     {
         if(personId==null) throw new ArgumentNullException(nameof(personId));
-        var person=PersonList.FirstOrDefault(x=>x.PersonId== personId)?.ToPersonResponse();
-        return person;
+        Person? person=PersonList.FirstOrDefault(x=>x.PersonId== personId);
+        return ConvertPersonToPersonResponse(person);
     }
 
     public List<PersonResponse> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOptions sortOrder)
@@ -147,7 +155,7 @@ public class PersonService : IPersonService
 
         switch (sortBy)
         {
-            case nameof(Person.PersonName):
+            case nameof(PersonResponse.PersonName):
                 if (sortOrder.Equals(SortOrderOptions.ASC)) {
                     matchingPersons = allPersons.OrderBy(x => x.PersonName).ToList();
                 }
@@ -157,7 +165,7 @@ public class PersonService : IPersonService
                 }
                 break;
 
-            case nameof(Person.Email):
+            case nameof(PersonResponse.Email):
                 if (sortOrder.Equals(SortOrderOptions.ASC))
                 {
                     matchingPersons = allPersons.OrderBy(x => x.Email).ToList();
@@ -169,7 +177,7 @@ public class PersonService : IPersonService
                 break;
 
 
-            case nameof(Person.DateOfBirth):
+            case nameof(PersonResponse.DateOfBirth):
                 if (sortOrder.Equals(SortOrderOptions.ASC))
                 {
                     matchingPersons = allPersons.OrderBy(x => x.DateOfBirth).ToList();
@@ -180,7 +188,7 @@ public class PersonService : IPersonService
                 }
                 break;
 
-            case nameof(Person.Gender):
+            case nameof(PersonResponse.Gender):
                 if (sortOrder.Equals(SortOrderOptions.ASC))
                 {
                     matchingPersons = allPersons.OrderBy(x => x.Gender).ToList();
@@ -191,18 +199,18 @@ public class PersonService : IPersonService
                 }
                 break;
 
-            case nameof(Person.CountryId):
+            case nameof(PersonResponse.Country):
                 if (sortOrder.Equals(SortOrderOptions.ASC))
                 {
-                    matchingPersons = allPersons.OrderBy(x => x.CountryId).ToList();
+                    matchingPersons = allPersons.OrderBy(x => x.Country).ToList();
                 }
                 else
                 {
-                    matchingPersons = allPersons.OrderByDescending(x => x.CountryId).ToList();
+                    matchingPersons = allPersons.OrderByDescending(x => x.Country).ToList();
                 }
                 break;
 
-            case nameof(Person.Address):
+            case nameof(PersonResponse.Address):
                 if (sortOrder.Equals(SortOrderOptions.ASC))
                 {
                     matchingPersons = allPersons.OrderBy(x => x.Address).ToList();
@@ -210,6 +218,16 @@ public class PersonService : IPersonService
                 else
                 {
                     matchingPersons = allPersons.OrderByDescending(x => x.Address).ToList();
+                }
+                break;
+            case nameof(PersonResponse.Age):
+                if (sortOrder.Equals(SortOrderOptions.ASC))
+                {
+                    matchingPersons = allPersons.OrderBy(x => x.Age).ToList();
+                }
+                else
+                {
+                    matchingPersons = allPersons.OrderByDescending(x => x.Age).ToList();
                 }
                 break;
 
