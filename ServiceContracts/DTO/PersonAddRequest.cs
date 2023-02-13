@@ -14,19 +14,23 @@ namespace ServiceContracts.DTO;
 /// </summary>
 public class PersonAddRequest
 {
-    [Required(ErrorMessage ="Can not be blank or null")]
+    [Required]
+    [Display(Name ="Name")]
     public string PersonName { get; set; }
-    [Required(ErrorMessage = "Can not be blank or null")]
+    [Required]
+    [EmailAddress]
+    [DataType(DataType.EmailAddress)]
     public string? Email { get; set; }
-    [Required(ErrorMessage = "Can not be blank or null")]
+    [Required]
+    [DataType(DataType.Date)]
     public DateTime? DateOfBirth { get; set; }
-    [Required(ErrorMessage = "Can not be blank or null")]
+    [Required]
     public GenderOptions? Gender { get; set; }
-    [Required(ErrorMessage = "Can not be blank or null")]
+    [Required]
     public Guid? CountryId { get; set; }
-    [Required(ErrorMessage = "Can not be blank or null")]
+    [Required]
     public string? Address { get; set; }
-    [Required(ErrorMessage = "Can not be blank or null")]
+    [Required]
     public bool ReceiveNewsLetters { get; set; }
 
     /// <summary>

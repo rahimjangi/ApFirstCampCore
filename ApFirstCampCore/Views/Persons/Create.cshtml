@@ -14,6 +14,7 @@
             </div>
             <div class="flex-1">
                 <input asp-for="@Model.PersonName" class="form-input" />
+                <span asp-validation-for="PersonName" class="text-red"></span>
             </div>
         </div>
 
@@ -23,6 +24,7 @@
             </div>
             <div class="flex-1">
                 <input asp-for="@Model.Email" type="email" class="form-input" />
+                <span asp-validation-for="Email" class="text-red"></span>
             </div>
         </div>
 
@@ -32,22 +34,28 @@
             </div>
             <div class="flex-1">
                 <input asp-for="@Model.DateOfBirth" type="date" class="form-input" />
+                <span asp-validation-for="DateOfBirth" class="text-red"></span>
             </div>
         </div>
 
         <div class="form-field flex">
             <div class="w-25">
-                <label asp-for="@Model.Gender" class="form-label "></label>
+                <label  class="form-label ">Gender</label>
             </div>
             <div class="flex-1">
                 @{
                     string[] genders = (string[])Enum.GetNames(typeof(GenderOptions));
                 }
-                @foreach (string gender in genders)
+                @foreach (var gender in genders)
                 {
-                    <input type="radio" asp-for="Gender" value="@gender" class="ml" />
-                    <label for="@gender">@gender</label>
+                    <input type="radio" asp-for="Gender" value="@gender" id="@gender" />
+
+                    <label for="@gender"> @gender</label>
+
+                    
                 }
+                <br />
+                <span asp-validation-for="Gender" class="text-red"></span>
 
             </div>
         </div>
@@ -57,13 +65,10 @@
                 <label asp-for="CountryId" class="form-label ">Country</label>
             </div>
             <div class="flex-1">
-                <select asp-for="CountryId" class="form-input">
-                    <option>Select Country</option>
-                    @foreach (CountryResponse item in ViewBag.Countries)
-                    {
-                        <option value="@item.CountryId">@item.CountryName</option>
-                    }
+                <select asp-for="CountryId" class="form-input" asp-items="@ViewBag.Countries">
+                    <option value="">Please Select</option>
                 </select>
+                <span asp-validation-for="CountryId" class="text-red"></span>
             </div>
         </div>
 
@@ -73,6 +78,7 @@
             </div>
             <div class="flex-1">
                 <textarea asp-for="Address" class="form-input" ></textarea>
+                <span asp-validation-for="Address" class="text-red"></span>
             </div>
         </div>
 
@@ -82,15 +88,17 @@
             <div class="flex-1">
                 <input type="checkbox" asp-for="ReceiveNewsLetters" value="true" />
                 <label asp-for="ReceiveNewsLetters" class="form-input"></label>
+                <span asp-validation-for="ReceiveNewsLetters" class="text-red"></span>
             </div>
         </div>
         <div class="form-field flex">
             <div class="w-25"></div>
 
-            <div class="w-25">
+            <div class="w-50">
                 <button type="submit" class="button button-green-back">Submit</button>
-                <hr />
-                @if (ViewBag.Errors != null)
+                <br />
+                <div asp-validation-summary="All" class="text-red"></div>
+@*                @if (ViewBag.Errors != null)
                 {
                     <div class="text-red ml">
                         <ul>
@@ -100,8 +108,11 @@
                             }
                         </ul>
                     </div>
-                }
+                }*@
             </div>
         </div>
     </form>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js" integrity="sha512-xq+Vm8jC94ynOikewaQXMEkJIOBp7iArs3IhFWSWdRT3Pq8wFz46p+ZDFAR7kHnSFf+zUv52B3prRYnbDRdgog==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.Enums;
@@ -62,13 +63,18 @@ public class PersonsController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        ViewBag.Countries = _unitOfWork.CountriesService.GetAll();
+        ViewBag.Countries = _unitOfWork.CountriesService.GetAll().Select(temp=>
+            new SelectListItem() { Text=temp.CountryName,Value=temp.CountryId.ToString()}
+        );
+
+
+
         return View();
     }
 
     [Route("[action]")]
     [HttpPost]
-    public IActionResult Create([FromForm]PersonAddRequest personAddRequest)
+    public IActionResult Create(PersonAddRequest personAddRequest)
         {
         if(ModelState.IsValid)
         {
