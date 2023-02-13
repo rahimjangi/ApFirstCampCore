@@ -10,7 +10,9 @@
 <body>
     <div class="container">
         <div class="navbar">
-            <div class="navbar-brand">WebApp</div>
+            <div class="navbar-brand">
+                <img src="~/images/logo.png" height="30px" width="30px" asp-append-version="true"/>
+            </div>
             <ul>
                 <li><a href="~/persons/index">Persons</a></li>
                 <li><a href="~/persons/create">Create Person</a></li>
@@ -20,6 +22,6 @@
             @RenderBody()
         </div>
     </div>
-
+    @RenderSection("scripts",false)
 </body>
 </html>

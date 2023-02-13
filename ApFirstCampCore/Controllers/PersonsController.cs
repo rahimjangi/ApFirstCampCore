@@ -89,4 +89,56 @@ public class PersonsController : Controller
 
         return RedirectToAction("Index","Persons");
     }
+
+    [HttpGet]
+    [Route("[action]/{personId}")]
+    public IActionResult Edit(Guid personId)
+    {
+        PersonResponse personResponse =_unitOfWork.PersonService.GetPersonByPersonId(personId);
+        ViewBag.Countries = _unitOfWork.CountriesService.GetAll().Select(country => new SelectListItem() {
+            Text=country.CountryName,Value=country.CountryId.ToString()
+        });
+
+        return View(personResponse.ToPersonUpdateRequest());
+    }
+
+    [HttpPost]
+    [Route("[action]/{personId}")]
+    public IActionResult Edit(PersonUpdateRequest personUpdateRequest)
+    {
+        if (ModelState.IsValid)
+        {
+            _unitOfWork.PersonService.UpdatePerson(personUpdateRequest);
+        return RedirectToAction("Index", "Persons");
+        }
+        else
+        {
+            return View("Edit",personUpdateRequest);
+        }
+
+    }
+
+    [HttpGet]
+    [Route("[action]/{personId}")]
+    public IActionResult Delete(Guid personId)
+    {
+        PersonResponse? personResponse = _unitOfWork.PersonService.GetPersonByPersonId(personId);
+        if (personResponse == null)
+        {
+            return RedirectToAction("Index","Persons");
+        }
+        return View(personResponse);
+    }
+
+    [HttpPost]
+    [Route("[action]/{personId}")]
+    public IActionResult Delete(PersonUpdateRequest personUpdateRequest)
+    {
+        var person=_unitOfWork.PersonService.GetPersonByPersonId(personUpdateRequest.PersonId);
+        if (person != null)
+        {
+         _unitOfWork.PersonService.DeletePerson(person.PersonId);
+        }
+        return RedirectToAction("Index", "Persons");
+    }
 }
