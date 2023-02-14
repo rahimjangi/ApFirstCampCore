@@ -1,4 +1,5 @@
-﻿using ServiceContracts;
+﻿using Entities;
+using ServiceContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,9 @@ public class UnitOfWork : IUnitOfWork
     public IPersonService PersonService { get; set; }
     public ICountriesService CountriesService { get; set; }
 
-    public UnitOfWork()
+    public UnitOfWork(ApplicationDbContext _db)
     {
-        PersonService =  new PersonService();
-        CountriesService = new CountriesService();
+        PersonService =  new PersonService(_db);
+        CountriesService = new CountriesService(_db);
     }
 }

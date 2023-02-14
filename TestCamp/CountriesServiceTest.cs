@@ -1,4 +1,6 @@
-﻿using ServiceContracts;
+﻿using Entities;
+using Microsoft.EntityFrameworkCore;
+using ServiceContracts;
 using ServiceContracts.DTO;
 using Services;
 using System;
@@ -15,7 +17,11 @@ namespace TestCamp
 
         public CountriesServiceTest()
         {
-            _countriesService = new CountriesService(false);
+            
+            _countriesService = new CountriesService(new ApplicationDbContext(
+                new DbContextOptionsBuilder<ApplicationDbContext>().Options)
+                );
+            
         }
 
         #region AddCountry

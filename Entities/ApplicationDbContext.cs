@@ -38,7 +38,11 @@ namespace Entities
             {
                 modelBuilder.Entity<Person>().HasData(person);
             }
-
+            
+        }
+        public List<Person> sp_getAllPersons()
+        {
+            return Persons.FromSqlRaw("EXECUTE [dbo].[GetAllPersons]").ToList();
         }
     }
 }

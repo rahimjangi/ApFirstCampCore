@@ -5,7 +5,7 @@ using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<IUnitOfWork,UnitOfWork>();
+builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(
     options=> {
