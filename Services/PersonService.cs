@@ -65,6 +65,7 @@ public class PersonService : IPersonService
         //{
         //    throw new ArgumentException(validationResults.FirstOrDefault()?.ErrorMessage);
         //}
+        var pp=_db.sp_addPerson(personAddRequest.ToPerson());
 
         ModelValidate.Validate(personAddRequest);
 
