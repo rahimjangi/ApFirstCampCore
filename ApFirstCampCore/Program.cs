@@ -7,6 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 
+builder.Services.AddScoped<ICountriesService, CountriesService>();
+builder.Services.AddScoped<IPersonService, PersonService>();
+
 builder.Services.AddDbContext<ApplicationDbContext>(
     options=> {
         options.UseSqlServer(
@@ -22,6 +25,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
+Rotativa.AspNetCore.RotativaConfiguration.Setup("wwwroot");
 app.UseStaticFiles();
 app.UseRouting();
 app.MapControllers();

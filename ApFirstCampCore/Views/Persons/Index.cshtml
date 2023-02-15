@@ -5,8 +5,10 @@
 }
 
 <div class="container">
+    <a asp-controller="Persons" asp-action="PersonPDF"><i class="bi bi-download"></i>PDF</a>
     <form method="get"  asp-controller="persons" asp-action="index">
         <h2>Persons</h2>
+        
         <div class="box flex">
             <div class="flex-1">
                 <select class="form-input" name="searchBy">

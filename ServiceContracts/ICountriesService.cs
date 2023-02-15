@@ -18,7 +18,7 @@ public interface ICountriesService
     /// </summary>
     /// <param name="countryAddRequest">Country Object to add</param>
     /// <returns>Returns the Country object after adding it to the country list(including GUID)</returns>
-    CountryResponse AddCountry(CountryAddRequest? countryAddRequest);
-    IEnumerable<CountryResponse> GetAll();
-    CountryResponse? GetCountryByCountryId(Guid? countryId);
+    Task<CountryResponse> AddCountry(CountryAddRequest? countryAddRequest);
+    Task<List<CountryResponse>> GetAll();
+    Task<CountryResponse>? GetCountryByCountryId(Guid? countryId);
 }

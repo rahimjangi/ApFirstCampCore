@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Rotativa.AspNetCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.Enums;
@@ -20,7 +21,7 @@ public class PersonsController : Controller
 
     [Route("[action]")]
     [Route("/")]
-    public IActionResult Index(string searchBy, string? searchString, string sortBy = nameof(PersonResponse.PersonName), SortOrderOptions sortOrder = SortOrderOptions.ASC)
+    public async Task<IActionResult> Index(string searchBy, string? searchString, string sortBy = nameof(PersonResponse.PersonName), SortOrderOptions sortOrder = SortOrderOptions.ASC)
     {
 
         ViewBag.SearchFields = new Dictionary<string, string>()
@@ -32,24 +33,16 @@ public class PersonsController : Controller
             { nameof(Person.Address),"Address" },
             {"Country","Country" }
         };
-        List<PersonResponse> persons = _unitOfWork.PersonService.GetAllPersons();
+        List<PersonResponse> persons = await _unitOfWork.PersonService.GetAllPersons();
 
         if (searchBy != null && searchString != null)
         {
-            //if (searchBy == "Country")
-            //{
-            //    var ids=_unitOfWork.CountriesService.GetAll()?
-            //        .Where(x=>x.CountryName.Contains(searchString,StringComparison.OrdinalIgnoreCase))?.Select(x=>x.CountryId).ToList();
-            //    persons = persons.Where(x => ids.Any(srch => x.CountryId == srch)).ToList();
-            //}else
-            persons = _unitOfWork.PersonService.GetFilteredPersons(searchBy, searchString);
-        }
-        foreach (var item in persons)
-        {
-            item.Country = _unitOfWork.CountriesService.GetCountryByCountryId(item.CountryId)?.CountryName;
+            persons = await _unitOfWork.PersonService.GetFilteredPersons(searchBy, searchString);
+            
         }
 
-        List<PersonResponse> sortedPersons = _unitOfWork.PersonService.GetSortedPersons(persons, sortBy, sortOrder);
+
+        List<PersonResponse> sortedPersons = await _unitOfWork.PersonService.GetSortedPersons(persons, sortBy, sortOrder);
         ViewBag.CurrentSortBy = sortBy;
         ViewBag.CurrentSortOrder = sortOrder.ToString();
 
@@ -61,9 +54,10 @@ public class PersonsController : Controller
 
     [Route("[action]")]
     [HttpGet]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        ViewBag.Countries = _unitOfWork.CountriesService.GetAll().Select(temp=>
+        var countryList = await _unitOfWork.CountriesService.GetAll();
+        ViewBag.Countries = countryList.ToList().Select(temp=>
             new SelectListItem() { Text=temp.CountryName,Value=temp.CountryId.ToString()}
         );
 
@@ -74,11 +68,11 @@ public class PersonsController : Controller
 
     [Route("[action]")]
     [HttpPost]
-    public IActionResult Create(PersonAddRequest personAddRequest)
+    public async Task<IActionResult> Create(PersonAddRequest personAddRequest)
         {
         if(ModelState.IsValid)
         {
-           PersonResponse? createdPerson= _unitOfWork.PersonService.AddPerson(personAddRequest);
+           PersonResponse? createdPerson= await _unitOfWork.PersonService.AddPerson(personAddRequest);
         }
         else
         {
@@ -92,10 +86,10 @@ public class PersonsController : Controller
 
     [HttpGet]
     [Route("[action]/{personId}")]
-    public IActionResult Edit(Guid personId)
+    public async Task<IActionResult> Edit(Guid personId)
     {
-        PersonResponse personResponse =_unitOfWork.PersonService.GetPersonByPersonId(personId);
-        ViewBag.Countries = _unitOfWork.CountriesService.GetAll().Select(country => new SelectListItem() {
+        PersonResponse? personResponse =await _unitOfWork.PersonService.GetPersonByPersonId(personId);
+        ViewBag.Countries = (await _unitOfWork.CountriesService.GetAll()).Select(country => new SelectListItem() {
             Text=country.CountryName,Value=country.CountryId.ToString()
         });
 
@@ -104,7 +98,7 @@ public class PersonsController : Controller
 
     [HttpPost]
     [Route("[action]/{personId}")]
-    public IActionResult Edit(PersonUpdateRequest personUpdateRequest)
+    public async Task<IActionResult> Edit(PersonUpdateRequest personUpdateRequest)
     {
         if (ModelState.IsValid)
         {
@@ -120,9 +114,9 @@ public class PersonsController : Controller
 
     [HttpGet]
     [Route("[action]/{personId}")]
-    public IActionResult Delete(Guid personId)
+    public async Task<IActionResult> Delete(Guid personId)
     {
-        PersonResponse? personResponse = _unitOfWork.PersonService.GetPersonByPersonId(personId);
+        PersonResponse? personResponse = await _unitOfWork.PersonService.GetPersonByPersonId(personId);
         if (personResponse == null)
         {
             return RedirectToAction("Index","Persons");
@@ -132,13 +126,26 @@ public class PersonsController : Controller
 
     [HttpPost]
     [Route("[action]/{personId}")]
-    public IActionResult Delete(PersonUpdateRequest personUpdateRequest)
+    public async Task<IActionResult> Delete(PersonUpdateRequest personUpdateRequest)
     {
-        var person=_unitOfWork.PersonService.GetPersonByPersonId(personUpdateRequest.PersonId);
+        var person=await _unitOfWork.PersonService.GetPersonByPersonId(personUpdateRequest.PersonId);
         if (person != null)
         {
-         _unitOfWork.PersonService.DeletePerson(person.PersonId);
+         await _unitOfWork.PersonService.DeletePerson(person.PersonId);
         }
         return RedirectToAction("Index", "Persons");
     }
+
+    [HttpGet]
+    [Route("[action]")]
+    public async Task<IActionResult> PersonPDF()
+    {
+        List<PersonResponse> personResponses = await _unitOfWork.PersonService.GetAllPersons();
+        return new ViewAsPdf("PersonsPDF", personResponses, ViewData)
+        {
+            PageMargins = new Rotativa.AspNetCore.Options.Margins() { Top = 20, Right = 20, Bottom = 20, Left = 20 },
+            PageOrientation = Rotativa.AspNetCore.Options.Orientation.Landscape
+        };
+    }
+        
 }

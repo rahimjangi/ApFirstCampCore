@@ -24,21 +24,41 @@ namespace Entities
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Country>().ToTable("Countries");
             modelBuilder.Entity<Person>().ToTable("Persons");
-            string countriesJson=System.IO.File.ReadAllText("countries.json");
-            string personsJson = System.IO.File.ReadAllText("persons.json");
 
-            List<Country> countriesList= System.Text.Json.JsonSerializer.Deserialize<List<Country>>(countriesJson);
-            List<Person> personList= System.Text.Json.JsonSerializer.Deserialize<List<Person>>(personsJson);
+            modelBuilder.Entity<Person>().Property(col=>col.TIM)
+                .HasColumnName("TaxIdentificationNumber")
+                .HasColumnType("VARCHAR(8)");
 
-            foreach (Country country  in countriesList) 
-            {
-                modelBuilder.Entity<Country>().HasData(country);
-            }
+            //modelBuilder.Entity<Person>().HasIndex(col => col.TIM).IsUnique();
+            modelBuilder.Entity<Person>().HasCheckConstraint("CHK_TIM", "LEN([TaxIdentificationNumber])=8");
 
-            foreach (Person person in personList)
-            {
-                modelBuilder.Entity<Person>().HasData(person);
-            }
+
+
+
+
+            //string countriesJson=System.IO.File.ReadAllText("countries.json");
+            //string personsJson = System.IO.File.ReadAllText("persons.json");
+
+            //List<Country> countriesList= System.Text.Json.JsonSerializer.Deserialize<List<Country>>(countriesJson);
+            //List<Person> personList= System.Text.Json.JsonSerializer.Deserialize<List<Person>>(personsJson);
+
+            //foreach (Country country  in countriesList) 
+            //{
+            //    modelBuilder.Entity<Country>().HasData(country);
+            //}
+
+            //foreach (Person person in personList)
+            //{
+            //    modelBuilder.Entity<Person>().HasData(person);
+            //}
+
+            // FluentAPI table relationtion
+            //modelBuilder.Entity<Person>(entity => {
+            //    entity.HasOne<Country>(p => p.Country)
+            //    .WithMany(p => p.Persons)
+            //    .HasForeignKey(p => p.CountryId);
+            //});
+
             
         }
         public List<Person> sp_getAllPersons()

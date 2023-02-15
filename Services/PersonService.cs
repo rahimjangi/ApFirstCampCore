@@ -18,26 +18,21 @@ namespace Services;
 public class PersonService : IPersonService
 {
     private readonly ApplicationDbContext _db;
-    private readonly ICountriesService _countryService;
 
     public PersonService(ApplicationDbContext dbContext)
     {
         _db = dbContext;
-        _countryService = new CountriesService(_db);
     }
 
     private  PersonResponse? ConvertPersonToPersonResponse(Person person)
     {
 
-        //_db.Database.ExecuteSqlRaw("select * from country where countryid={0}", 1);
-        //_db.Persons.FromSqlRaw<Person>("select * from person where personid={0}",1);
-
         if (person == null) return null;
         var genderOptions = GenderOptions.Other;
         PersonResponse personResponse= new PersonResponse() {
-
             PersonId = person.PersonId,
             CountryId = person.CountryId,
+            Country=person.Country?.CountryName,
             PersonName = person.PersonName,
             Email = person.Email,
             DateOfBirth = person.DateOfBirth,
@@ -46,63 +41,33 @@ public class PersonService : IPersonService
             Gender = (Enum.TryParse<GenderOptions>(person.Gender,true,out genderOptions)?genderOptions:GenderOptions.Other),
             ReceiveNewsLetters = person.ReceiveNewsLetters
         };
-        //PersonResponse response = person.ToPersonResponse();
-        //response.Country=_countryService.GetCountryByCountryId(person.CountryId)?.CountryName;
-        //return response;
-        personResponse.Country = _countryService.GetCountryByCountryId(person.CountryId)?.CountryName;
         return personResponse;
     }
 
-    public PersonResponse? AddPerson(PersonAddRequest? personAddRequest)
+    public async Task<PersonResponse>? AddPerson(PersonAddRequest? personAddRequest)
     {
         if(personAddRequest == null)throw new ArgumentNullException(nameof(personAddRequest));
-        //if(String.IsNullOrEmpty(personAddRequest.PersonName)) throw new ArgumentException(nameof(personAddRequest.PersonName));
-
-        //ValidationContext validationContext = new ValidationContext(personAddRequest);
-        //List<ValidationResult> validationResults = new List<ValidationResult>();
-        //bool isValid=Validator.TryValidateObject(personAddRequest, validationContext,validationResults,true);
-        //if(!isValid)
-        //{
-        //    throw new ArgumentException(validationResults.FirstOrDefault()?.ErrorMessage);
-        //}
-        var pp=_db.sp_addPerson(personAddRequest.ToPerson());
 
         ModelValidate.Validate(personAddRequest);
-
-        Person person=personAddRequest.ToPerson();
-        person.PersonId=Guid.NewGuid();
-        _db.Add(person);
-        _db.SaveChanges();
-        PersonResponse? personResponse= _db.Persons.FirstOrDefault(x=>x.PersonId==person.PersonId)?.ToPersonResponse();
-        personResponse.Country=_countryService.GetCountryByCountryId(person.CountryId)?.CountryName;
-        return personResponse;
-        //return PersonList.FirstOrDefault(x => x.PersonId == person.PersonId).ToPersonResponse();
-            
-        //return person.ToPersonResponse();
+        Person? person = personAddRequest.ToPerson();
+        var savedPerson= await _db.Persons.AddAsync(person);
+        await _db.SaveChangesAsync();
+        return  savedPerson.Entity.ToPersonResponse();
 
     }
 
 
-    public List<PersonResponse> GetAllPersons()
+    public async Task<List<PersonResponse>> GetAllPersons()
     {
-        //_db.sp_getAllPersons();
-        //_db.Database.FromSqlRaw("EXECUTE [dbo].[GetAllPersons]", new { }).ToList();
-        //List<PersonResponse> personResponses = new List<PersonResponse>();
-        //foreach (Person person in _db.Persons.ToList())
-        //{
-        //    personResponses.Add(ConvertPersonToPersonResponse(person));
-        //}
-        //_db.SaveChanges();
-        //return personResponses;
-        //return _db.Persons.ToList().Select(x => ConvertPersonToPersonResponse(x)).ToList();
-        return _db.sp_getAllPersons().ToList().Select(x => ConvertPersonToPersonResponse(x)).ToList();
+        var result = await _db.Persons.Include(p=>p.Country).ToListAsync();
+        return result.Select(person => person.ToPersonResponse()).ToList();
     }
 
-    public List<PersonResponse>? GetFilteredPersons(string searchBy, string? searchString)
+    public async Task<List<PersonResponse?>> GetFilteredPersons(string searchBy, string? searchString)
     {
 
 
-        List<PersonResponse> allPersons = GetAllPersons();
+        List<PersonResponse> allPersons = await GetAllPersons();
         List<PersonResponse> matchingPersons = allPersons;
 
         if (string.IsNullOrEmpty(searchBy) || string.IsNullOrEmpty(searchString))
@@ -152,14 +117,14 @@ public class PersonService : IPersonService
         return matchingPersons;
     }
 
-    public PersonResponse? GetPersonByPersonId(Guid? personId)
+    public async Task<PersonResponse?> GetPersonByPersonId(Guid? personId)
     {
         if(personId==null) throw new ArgumentNullException(nameof(personId));
         Person? person=_db.Persons.FirstOrDefault(x=>x.PersonId== personId);
         return ConvertPersonToPersonResponse(person);
     }
 
-    public List<PersonResponse> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOptions sortOrder)
+    public async Task<List<PersonResponse>> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOptions sortOrder)
     {
         List<PersonResponse> matchingPersons = allPersons;
 
@@ -249,7 +214,7 @@ public class PersonService : IPersonService
         return matchingPersons;
     }
 
-    public PersonResponse? UpdatePerson(PersonUpdateRequest? personUpdateRequest)
+    public async Task<PersonResponse?> UpdatePerson(PersonUpdateRequest? personUpdateRequest)
     {
         if (personUpdateRequest == null) throw new ArgumentNullException(nameof(personUpdateRequest));
         Helpers.ModelValidate.Validate(personUpdateRequest);
@@ -260,7 +225,7 @@ public class PersonService : IPersonService
         _db.SaveChanges();
         return _db.Persons.FirstOrDefault(x => x.PersonId == personUpdateRequest.PersonId)?.ToPersonResponse();
     }
-    public void DeletePerson(Guid? PersonId)
+    public async Task DeletePerson(Guid? PersonId)
     {
         if (PersonId == null) throw new ArgumentNullException(nameof(PersonId));
         Person? person = _db.Persons.FirstOrDefault(x => x.PersonId == PersonId);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,5 +15,6 @@ public class Country
     [Key]
     public Guid CountryId { get; set; }
     [StringLength(25)]
-    public string? CountryName { get; set; }    
+    public string? CountryName { get; set; }
+    public virtual ICollection<Person>? Persons { get; set; }
 }

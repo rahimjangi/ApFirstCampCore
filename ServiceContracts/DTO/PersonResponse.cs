@@ -3,6 +3,7 @@ using ServiceContracts.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -65,16 +66,22 @@ public class PersonResponse
 
 public static class PersonExtensions
 {
-    public static PersonResponse ToPersonResponse(this Person person) => new PersonResponse
+    public static PersonResponse ToPersonResponse(this Person person)
     {
-        PersonId = person.PersonId,
-        CountryId = person.CountryId,
-        PersonName = person.PersonName,
-        Email = person.Email,
-        DateOfBirth = person.DateOfBirth,
-        Age = (person.DateOfBirth!=null)?(int)Math.Round((DateTime.Now - person.DateOfBirth).GetValueOrDefault().TotalDays / 365.24):0,
-        Address = person.Address,
-        Gender=Enum.Parse<GenderOptions>(person.Gender),
-        ReceiveNewsLetters=person.ReceiveNewsLetters
-    };
+        Object tmp = null ;
+        return new PersonResponse
+        {
+            PersonId = person.PersonId,
+            CountryId = person.CountryId,
+            PersonName = person.PersonName,
+            Email = person.Email,
+            DateOfBirth = person.DateOfBirth,
+            Age = (person.DateOfBirth != null) ? (int)Math.Round((DateTime.Now - person.DateOfBirth).GetValueOrDefault().TotalDays / 365.24) : 0,
+            Address = person.Address,
+            Country=(person.Country!=null) ?person.Country.CountryName:null,
+            //Gender=Enum.Parse<GenderOptions>(person?.Gender),
+            Gender = Enum.TryParse(typeof(GenderOptions), person.Gender,true, out tmp)?Enum.Parse<GenderOptions>(person.Gender):GenderOptions.Other,
+            ReceiveNewsLetters = (person.ReceiveNewsLetters!=null)? person.ReceiveNewsLetters:false
+        };
+    }
 }

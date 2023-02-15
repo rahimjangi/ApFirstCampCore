@@ -95,9 +95,15 @@ namespace Entities.Migrations
                     b.Property<bool>("ReceiveNewsLetters")
                         .HasColumnType("bit");
 
+                    b.Property<string>("TIM")
+                        .HasColumnType("VARCHAR(8)")
+                        .HasColumnName("TaxIdentificationNumber");
+
                     b.HasKey("PersonId");
 
                     b.ToTable("Persons", (string)null);
+
+                    b.HasCheckConstraint("CHK_TIM", "LEN([TIM])=8");
 
                     b.HasData(
                         new
