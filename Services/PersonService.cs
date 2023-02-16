@@ -1,4 +1,6 @@
-﻿using Entities;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using Entities;
 using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
@@ -7,6 +9,7 @@ using Services.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -232,5 +235,55 @@ public class PersonService : IPersonService
         if (person == null) throw new ArgumentException("Requested object does not exist");
         _db.Remove(person);
         _db.SaveChanges();
+    }
+
+    public async Task<MemoryStream> GetPersonsCsv()
+    {
+        MemoryStream memoryStream= new MemoryStream();
+        StreamWriter streamWriter= new StreamWriter(memoryStream);
+        CsvConfiguration csvConfiguration = new CsvConfiguration(
+            CultureInfo.InvariantCulture
+            );
+
+
+        CsvWriter csvWriter = new CsvWriter(streamWriter,csvConfiguration);
+
+        //csvWriter.WriteField(nameof(PersonResponse.PersonName));
+        //csvWriter.WriteField(nameof(PersonResponse.Email));
+        //csvWriter.WriteField(nameof(PersonResponse.DateOfBirth));
+        //csvWriter.WriteField(nameof(PersonResponse.ReceiveNewsLetters));
+        //csvWriter.WriteField(nameof(PersonResponse.Country));
+        //csvWriter.WriteField(nameof(PersonResponse.Address));
+        //csvWriter.WriteField(nameof(PersonResponse.Age));
+
+        csvWriter.WriteHeader<PersonResponse>();
+        csvWriter.NextRecord();
+        var PersonsList=(await _db.Persons.Include(c=>c.Country).ToListAsync()).Select(person=>person.ToPersonResponse()).ToList();
+
+        //foreach (var item in PersonsList)
+        //{
+        //    csvWriter.WriteField(item.PersonName);
+        //    csvWriter.WriteField(item.Email);
+        //    if (item.DateOfBirth.HasValue)
+        //    {
+        //        csvWriter.WriteField(item.DateOfBirth.Value.ToString("yyyy-MM-dd"));
+        //    }
+        //    else
+        //    {
+        //        csvWriter.WriteField("");
+        //    }
+        //    csvWriter.WriteField(item.ReceiveNewsLetters);
+        //    csvWriter.WriteField(item.Country);
+        //    csvWriter.WriteField(item.Address);
+        //    csvWriter.WriteField(item.Age);
+        //    csvWriter.NextRecord();
+        //}
+
+        await csvWriter.WriteRecordsAsync(PersonsList);
+        csvWriter.Flush();
+        memoryStream.Position=0;
+        
+        return memoryStream;
+
     }
 }

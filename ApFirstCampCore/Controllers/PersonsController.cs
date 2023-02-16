@@ -6,6 +6,7 @@ using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.Enums;
 using Services;
+using System.IO;
 
 namespace ApFirstCampCore.Controllers;
 
@@ -146,6 +147,14 @@ public class PersonsController : Controller
             PageMargins = new Rotativa.AspNetCore.Options.Margins() { Top = 20, Right = 20, Bottom = 20, Left = 20 },
             PageOrientation = Rotativa.AspNetCore.Options.Orientation.Landscape
         };
+    }
+
+    [Route("[action]")]
+    public async Task<IActionResult> PersonsCsv()
+    {
+        MemoryStream ms= await _unitOfWork.PersonService.GetPersonsCsv();
+
+        return File(ms,"application/octed-stream","persons.csv");
     }
         
 }

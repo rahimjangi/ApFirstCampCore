@@ -54,4 +54,6 @@ public interface IPersonService{
     /// </summary>
     /// <param name="PersonId">Person Id to delete</param>
     Task DeletePerson(Guid? PersonId);
+
+    Task<MemoryStream> GetPersonsCsv();
 }

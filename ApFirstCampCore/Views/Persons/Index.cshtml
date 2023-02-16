@@ -5,7 +5,8 @@
 }
 
 <div class="container">
-    <a asp-controller="Persons" asp-action="PersonPDF"><i class="bi bi-download"></i>PDF</a>
+    <a asp-controller="Persons" asp-action="PersonPDF" class="ml"><i class="bi bi-download"></i>PDF</a>
+    <a asp-controller="Persons" asp-action="PersonsCsv" class="ml"><i class="bi bi-filetype-csv"></i>CSV</a>
     <form method="get"  asp-controller="persons" asp-action="index">
         <h2>Persons</h2>
         
