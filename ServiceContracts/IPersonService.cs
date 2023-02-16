@@ -1,4 +1,5 @@
-﻿using ServiceContracts.DTO;
+﻿using Microsoft.AspNetCore.Http;
+using ServiceContracts.DTO;
 using ServiceContracts.Enums;
 using System;
 using System.Collections.Generic;
@@ -56,4 +57,8 @@ public interface IPersonService{
     Task DeletePerson(Guid? PersonId);
 
     Task<MemoryStream> GetPersonsCsv();
+
+    Task<MemoryStream?> GetPersonsExcel();
+
+    
 }

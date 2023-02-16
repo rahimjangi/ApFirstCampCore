@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Microsoft.AspNetCore.Http;
 using ServiceContracts.DTO;
 using System;
 using System.Collections.Generic;
@@ -21,4 +22,6 @@ public interface ICountriesService
     Task<CountryResponse> AddCountry(CountryAddRequest? countryAddRequest);
     Task<List<CountryResponse>> GetAll();
     Task<CountryResponse>? GetCountryByCountryId(Guid? countryId);
+
+    Task<int> UploadCountriesFromExcelFile(IFormFile formFile);
 }

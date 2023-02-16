@@ -156,5 +156,12 @@ public class PersonsController : Controller
 
         return File(ms,"application/octed-stream","persons.csv");
     }
+
+    [Route("[action]")]
+    public async Task<IActionResult> PersonExcel()
+    {
+        MemoryStream ms = await _unitOfWork.PersonService.GetPersonsExcel();
+        return File(ms, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "persons.xlsx");
+    }
         
 }
