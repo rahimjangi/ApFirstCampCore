@@ -34,16 +34,16 @@ public class PersonsController : Controller
             { nameof(Person.Address),"Address" },
             {"Country","Country" }
         };
-        List<PersonResponse> persons = await _unitOfWork.PersonService.GetAllPersons();
+        List<PersonResponse> persons = await _unitOfWork.PersonsService.GetAllPersons();
 
         if (searchBy != null && searchString != null)
         {
-            persons = await _unitOfWork.PersonService.GetFilteredPersons(searchBy, searchString);
+            persons = await _unitOfWork.PersonsService.GetFilteredPersons(searchBy, searchString);
             
         }
 
 
-        List<PersonResponse> sortedPersons = await _unitOfWork.PersonService.GetSortedPersons(persons, sortBy, sortOrder);
+        List<PersonResponse> sortedPersons = await _unitOfWork.PersonsService.GetSortedPersons(persons, sortBy, sortOrder);
         ViewBag.CurrentSortBy = sortBy;
         ViewBag.CurrentSortOrder = sortOrder.ToString();
 
@@ -57,7 +57,7 @@ public class PersonsController : Controller
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        var countryList = await _unitOfWork.CountriesService.GetAll();
+        var countryList = await _unitOfWork.CountriesService.GetAllCountries();
         ViewBag.Countries = countryList.ToList().Select(temp=>
             new SelectListItem() { Text=temp.CountryName,Value=temp.CountryId.ToString()}
         );
@@ -73,11 +73,11 @@ public class PersonsController : Controller
         {
         if(ModelState.IsValid)
         {
-           PersonResponse? createdPerson= await _unitOfWork.PersonService.AddPerson(personAddRequest);
+           PersonResponse? createdPerson= await _unitOfWork.PersonsService.AddPerson(personAddRequest);
         }
         else
         {
-            ViewBag.Countries = _unitOfWork.CountriesService.GetAll();
+            ViewBag.Countries = _unitOfWork.CountriesService.GetAllCountries();
             ViewBag.Errors=ModelState.Values.SelectMany(v=>v.Errors).Select(x=>x.ErrorMessage).ToList();
             return View();
         }
@@ -89,8 +89,8 @@ public class PersonsController : Controller
     [Route("[action]/{personId}")]
     public async Task<IActionResult> Edit(Guid personId)
     {
-        PersonResponse? personResponse =await _unitOfWork.PersonService.GetPersonByPersonId(personId);
-        ViewBag.Countries = (await _unitOfWork.CountriesService.GetAll()).Select(country => new SelectListItem() {
+        PersonResponse? personResponse =await _unitOfWork.PersonsService.GetPersonByPersonID(personId);
+        ViewBag.Countries = (await _unitOfWork.CountriesService.GetAllCountries()).Select(country => new SelectListItem() {
             Text=country.CountryName,Value=country.CountryId.ToString()
         });
 
@@ -103,7 +103,7 @@ public class PersonsController : Controller
     {
         if (ModelState.IsValid)
         {
-            _unitOfWork.PersonService.UpdatePerson(personUpdateRequest);
+            _unitOfWork.PersonsService.UpdatePerson(personUpdateRequest);
         return RedirectToAction("Index", "Persons");
         }
         else
@@ -117,7 +117,7 @@ public class PersonsController : Controller
     [Route("[action]/{personId}")]
     public async Task<IActionResult> Delete(Guid personId)
     {
-        PersonResponse? personResponse = await _unitOfWork.PersonService.GetPersonByPersonId(personId);
+        PersonResponse? personResponse = await _unitOfWork.PersonsService.GetPersonByPersonID(personId);
         if (personResponse == null)
         {
             return RedirectToAction("Index","Persons");
@@ -129,10 +129,10 @@ public class PersonsController : Controller
     [Route("[action]/{personId}")]
     public async Task<IActionResult> Delete(PersonUpdateRequest personUpdateRequest)
     {
-        var person=await _unitOfWork.PersonService.GetPersonByPersonId(personUpdateRequest.PersonId);
+        var person=await _unitOfWork.PersonsService.GetPersonByPersonID(personUpdateRequest.PersonId);
         if (person != null)
         {
-         await _unitOfWork.PersonService.DeletePerson(person.PersonId);
+         await _unitOfWork.PersonsService.DeletePerson(person.PersonId);
         }
         return RedirectToAction("Index", "Persons");
     }
@@ -141,7 +141,7 @@ public class PersonsController : Controller
     [Route("[action]")]
     public async Task<IActionResult> PersonPDF()
     {
-        List<PersonResponse> personResponses = await _unitOfWork.PersonService.GetAllPersons();
+        List<PersonResponse> personResponses = await _unitOfWork.PersonsService.GetAllPersons();
         return new ViewAsPdf("PersonsPDF", personResponses, ViewData)
         {
             PageMargins = new Rotativa.AspNetCore.Options.Margins() { Top = 20, Right = 20, Bottom = 20, Left = 20 },
@@ -152,7 +152,7 @@ public class PersonsController : Controller
     [Route("[action]")]
     public async Task<IActionResult> PersonsCsv()
     {
-        MemoryStream ms= await _unitOfWork.PersonService.GetPersonsCsv();
+        MemoryStream ms= await _unitOfWork.PersonsService.GetPersonsCSV();
 
         return File(ms,"application/octed-stream","persons.csv");
     }
@@ -160,7 +160,7 @@ public class PersonsController : Controller
     [Route("[action]")]
     public async Task<IActionResult> PersonExcel()
     {
-        MemoryStream ms = await _unitOfWork.PersonService.GetPersonsExcel();
+        MemoryStream ms = await _unitOfWork.PersonsService.GetPersonsExcel();
         return File(ms, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "persons.xlsx");
     }
         

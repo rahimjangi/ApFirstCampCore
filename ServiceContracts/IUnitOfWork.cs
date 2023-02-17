@@ -8,6 +8,6 @@ namespace ServiceContracts;
 
 public interface IUnitOfWork
 {
-    public IPersonService PersonService { get; set; }
+    public IPersonsService PersonsService { get; set; }
     public ICountriesService CountriesService { get; set; }
 }

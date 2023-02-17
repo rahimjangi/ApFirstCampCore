@@ -20,7 +20,7 @@ public class PersonResponse
     public string? Email { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public int? Age { get; set; }
-    public GenderOptions? Gender { get; set; }
+    public string? Gender { get; set; }
     public Guid? CountryId { get; set; }
     public string? Country { get; set; }
     public string? Address { get; set; }
@@ -47,7 +47,7 @@ public class PersonResponse
             DateOfBirth=DateOfBirth,
             Address=Address,
             CountryId=CountryId,
-            Gender=Gender,
+            Gender=(!string.IsNullOrEmpty(Gender))?Enum.Parse<GenderOptions>(Gender) :GenderOptions.Other,
             ReceiveNewsLetters=ReceiveNewsLetters,
             
         };
@@ -80,7 +80,7 @@ public static class PersonExtensions
             Address = person.Address,
             Country=(person.Country!=null) ?person.Country.CountryName:null,
             //Gender=Enum.Parse<GenderOptions>(person?.Gender),
-            Gender = Enum.TryParse(typeof(GenderOptions), person.Gender,true, out tmp)?Enum.Parse<GenderOptions>(person.Gender):GenderOptions.Other,
+            Gender = person.Gender,
             ReceiveNewsLetters = (person.ReceiveNewsLetters!=null)? person.ReceiveNewsLetters:false
         };
     }

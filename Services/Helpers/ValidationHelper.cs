@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Services.Helpers;
 
-public static class ModelValidate
+public static class ValidationHelper
 {
-    public static void  Validate(Object obj)
+    public static void ModelValidation(Object obj)
     {
         ValidationContext validationContext= new ValidationContext(obj);
         List<ValidationResult> validationResults= new List<ValidationResult>();

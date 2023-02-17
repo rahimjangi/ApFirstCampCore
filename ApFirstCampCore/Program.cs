@@ -8,7 +8,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 
 builder.Services.AddScoped<ICountriesService, CountriesService>();
-builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<IPersonsService, PersonsService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(
     options=> {

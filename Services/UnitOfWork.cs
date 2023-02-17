@@ -10,12 +10,12 @@ namespace Services;
 
 public class UnitOfWork : IUnitOfWork
 {
-    public IPersonService PersonService { get; set; }
+    public IPersonsService PersonsService { get; set; }
     public ICountriesService CountriesService { get; set; }
 
     public UnitOfWork(ApplicationDbContext _db)
     {
-        PersonService =  new PersonService(_db);
         CountriesService = new CountriesService(_db);
+        PersonsService = new PersonsService(_db, new CountriesService(_db));
     }
 }
