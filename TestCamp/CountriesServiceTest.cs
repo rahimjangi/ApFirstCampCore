@@ -10,16 +10,20 @@ using System.Text;
 using System.Threading.Tasks;
 using EntityFrameworkCoreMock;
 using Moq;
+using AutoFixture;
+using FluentAssertions;
 
 namespace TestCamp
 {
     public class CountriesServiceTest
     {
         private readonly ICountriesService _countriesService;
+        private readonly IFixture _fixture;
 
         //constructor
         public CountriesServiceTest()
         {
+            _fixture = new Fixture();
             var countriesInitialData = new List<Country>() { };
 
             DbContextMock<ApplicationDbContext> dbContextMock = new DbContextMock<ApplicationDbContext>(
@@ -69,8 +73,8 @@ namespace TestCamp
         public async Task AddCountry_DuplicateCountryName()
         {
             //Arrange
-            CountryAddRequest? request1 = new CountryAddRequest() { CountryName = "USA" };
-            CountryAddRequest? request2 = new CountryAddRequest() { CountryName = "USA" };
+            CountryAddRequest? request1 = _fixture.Build<CountryAddRequest>().With(tmp=>tmp.CountryName,"USA").Create();
+            CountryAddRequest? request2 = _fixture.Build<CountryAddRequest>().With(tmp => tmp.CountryName, "USA").Create();
 
             //Assert
             await Assert.ThrowsAsync<ArgumentException>(async () =>
@@ -87,7 +91,7 @@ namespace TestCamp
         public async Task AddCountry_ProperCountryDetails()
         {
             //Arrange
-            CountryAddRequest? request = new CountryAddRequest() { CountryName = "Japan" };
+            CountryAddRequest? request = _fixture.Create<CountryAddRequest>();
 
             //Act
             CountryResponse response = await _countriesService.AddCountry(request);
@@ -120,8 +124,8 @@ namespace TestCamp
         {
             //Arrange
             List<CountryAddRequest> country_request_list = new List<CountryAddRequest>() {
-        new CountryAddRequest() { CountryName = "USA" },
-        new CountryAddRequest() { CountryName = "UK" }
+        _fixture.Create<CountryAddRequest>(),
+        _fixture.Create < CountryAddRequest >()
       };
 
             //Act
@@ -166,7 +170,7 @@ namespace TestCamp
         public async Task GetCountryByCountryID_ValidCountryID()
         {
             //Arrange
-            CountryAddRequest? country_add_request = new CountryAddRequest() { CountryName = "China" };
+            CountryAddRequest? country_add_request = _fixture.Create<CountryAddRequest>();
             CountryResponse country_response_from_add = await _countriesService.AddCountry(country_add_request);
 
             //Act
